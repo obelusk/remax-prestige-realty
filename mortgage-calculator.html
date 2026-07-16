@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Calculator | The RE/MAX Collection</title>
+<meta name="robots" content="noindex"><!-- keep the bare calculator page out of search results; your website page is what should rank -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     The RE/MAX Collection brand palette
+     Dark Blue #000E35 (Pantone 295) | Cream #F7F5EE
+     Sky Blue #A3D4F2 (Pantone 277)  | Black #000000
+     Type: Gotham -> Montserrat fallback (per brand standards)
+     ============================================================ */
+  /* Standalone-page framing: match the widget's Dark Blue so the iframe
+     never shows white edges at any size */
+  html, body { margin: 0; padding: 0; background: #000E35; }
+
+  .rmc-widget, .rmc-widget * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .rmc-widget {
+    --rmc-dark-blue: #000E35;
+    --rmc-cream: #F7F5EE;
+    --rmc-sky: #A3D4F2;
+    --rmc-black: #000000;
+    --rmc-panel: #0A1A4A;
+    --rmc-line: rgba(163, 212, 242, 0.25);
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: var(--rmc-dark-blue);
+    color: var(--rmc-cream);
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 36px 28px;
+    border-top: 4px solid var(--rmc-sky);
+  }
+
+  /* ---------- Header ---------- */
+  .rmc-header { text-align: center; margin-bottom: 32px; }
+  .rmc-headline {
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    color: var(--rmc-cream);
+    margin-bottom: 10px;
+  }
+  .rmc-subhead {
+    font-family: Georgia, 'Times New Roman', serif; /* Miller Display stand-in */
+    font-style: italic;
+    font-size: 17px;
+    color: var(--rmc-sky);
+  }
+
+  /* ---------- Layout ---------- */
+  .rmc-body { display: flex; gap: 36px; align-items: flex-start; }
+  .rmc-form { flex: 1 1 46%; min-width: 300px; }
+  .rmc-results { flex: 1 1 54%; min-width: 300px; }
+
+  /* ---------- Form ---------- */
+  .rmc-field { margin-bottom: 16px; }
+  .rmc-row { display: flex; gap: 14px; }
+  .rmc-row .rmc-field { flex: 2; min-width: 0; }
+  .rmc-row .rmc-field.rmc-sm { flex: 1; } /* half-width fields */
+  .rmc-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--rmc-sky);
+    margin-bottom: 6px;
+  }
+  .rmc-input-wrap { position: relative; }
+  .rmc-prefix, .rmc-suffix {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 14px; color: rgba(247, 245, 238, 0.55); pointer-events: none;
+  }
+  .rmc-prefix { left: 13px; }
+  .rmc-suffix { right: 13px; }
+  .rmc-input, .rmc-select {
+    width: 100%;
+    background: var(--rmc-panel);
+    border: 1px solid var(--rmc-line);
+    border-radius: 2px;
+    color: var(--rmc-cream);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 11px 13px;
+    outline: none;
+    transition: border-color .18s ease;
+    -moz-appearance: textfield;
+  }
+  .rmc-input::-webkit-outer-spin-button,
+  .rmc-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .rmc-input:focus, .rmc-select:focus { border-color: var(--rmc-sky); }
+  .rmc-input.rmc-has-prefix { padding-left: 28px; }
+  .rmc-input.rmc-has-suffix { padding-right: 30px; }
+  .rmc-select {
+    appearance: none; -webkit-appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23A3D4F2' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 13px center;
+  }
+  .rmc-note { font-size: 11px; color: rgba(247, 245, 238, 0.5); margin-top: 5px; line-height: 1.45; }
+
+  .rmc-submit {
+    width: 100%;
+    margin-top: 8px;
+    background: var(--rmc-cream);
+    color: var(--rmc-dark-blue);
+    border: none;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background .18s ease;
+  }
+  .rmc-submit:hover { background: var(--rmc-sky); }
+
+  /* ---------- Results ---------- */
+  .rmc-placeholder {
+    border: 1px dashed var(--rmc-line);
+    border-radius: 2px;
+    padding: 60px 30px;
+    text-align: center;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 15px;
+    color: rgba(247, 245, 238, 0.55);
+    line-height: 1.7;
+  }
+  .rmc-output { display: none; }
+  .rmc-output.rmc-visible { display: block; animation: rmcFade .5s ease; }
+  @keyframes rmcFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .rmc-chart-wrap { display: flex; justify-content: center; margin-bottom: 8px; }
+  .rmc-donut { width: 250px; height: 250px; }
+  .rmc-donut-seg { transition: stroke-dashoffset .8s ease, stroke-dasharray .8s ease; }
+  .rmc-center-total {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: 700; fill: var(--rmc-cream);
+  }
+  .rmc-center-label {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 7px; font-weight: 600; letter-spacing: 0.18em;
+    fill: var(--rmc-sky); text-transform: uppercase;
+  }
+
+  .rmc-legend { list-style: none; margin: 14px 0 0; }
+  .rmc-legend li {
+    display: flex; align-items: center;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--rmc-line);
+    font-size: 13.5px;
+  }
+  .rmc-legend li:last-child { border-bottom: none; }
+  .rmc-swatch { width: 11px; height: 11px; border-radius: 50%; margin-right: 11px; flex: none; }
+  .rmc-legend-name { flex: 1; color: rgba(247, 245, 238, 0.85); }
+  .rmc-legend-amt { font-weight: 600; color: var(--rmc-cream); font-variant-numeric: tabular-nums; }
+
+  .rmc-cta-wrap { text-align: center; margin-top: 22px; }
+  .rmc-cta {
+    display: inline-block;
+    background: transparent;
+    color: var(--rmc-cream);
+    border: 1px solid var(--rmc-sky);
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    text-decoration: none;
+    padding: 13px 34px;
+    transition: background .18s ease, color .18s ease;
+  }
+  .rmc-cta:hover { background: var(--rmc-sky); color: var(--rmc-dark-blue); }
+  .rmc-cta-line {
+    font-family: Georgia, serif; font-style: italic;
+    font-size: 14px; color: rgba(247, 245, 238, 0.75); margin-bottom: 12px;
+  }
+
+  .rmc-disclaimer {
+    margin-top: 30px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rmc-line);
+    font-size: 10.5px;
+    line-height: 1.65;
+    color: rgba(247, 245, 238, 0.45);
+    text-align: center;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 720px) {
+    .rmc-widget { padding: 30px 20px 22px; }
+    .rmc-body { flex-direction: column; }
+    .rmc-form, .rmc-results { min-width: 0; width: 100%; }
+    .rmc-headline { font-size: 20px; letter-spacing: 0.25em; }
+  }
+  @media (max-width: 420px) {
+    .rmc-widget { padding: 24px 14px 18px; }
+    .rmc-row { gap: 10px; }
+    .rmc-input, .rmc-select { font-size: 14px; padding: 10px 11px; }
+    .rmc-input.rmc-has-prefix { padding-left: 25px; }
+    .rmc-input.rmc-has-suffix { padding-right: 26px; }
+    .rmc-prefix { left: 10px; }
+    .rmc-suffix { right: 10px; }
+    .rmc-headline { font-size: 17px; letter-spacing: 0.2em; }
+    .rmc-donut { width: 210px; height: 210px; }
+    .rmc-legend li { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rmc-widget">
+  <div class="rmc-header">
+    <h2 class="rmc-headline">Estimate Your Monthly Payment</h2>
+    <p class="rmc-subhead">Every remarkable home begins with a clear plan.</p>
+  </div>
+
+  <div class="rmc-body">
+    <!-- ================= FORM (div, not <form>, so it can never trigger a page submit/reload — even inside a host page's form) ================= -->
+    <div class="rmc-form" id="rmcForm">
+      <div class="rmc-field">
+        <label class="rmc-label" for="rmcPrice">Home Price</label>
+        <div class="rmc-input-wrap">
+          <span class="rmc-prefix">$</span>
+          <input class="rmc-input rmc-has-prefix" type="number" id="rmcPrice" value="850000" min="10000" step="1000" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="rmc-row">
+        <div class="rmc-field">
+          <label class="rmc-label" for="rmcDown">Down Payment</label>
+          <div class="rmc-input-wrap">
+            <span class="rmc-prefix">$</span>
+            <input class="rmc-input rmc-has-prefix" type="number" id="rmcDown" value="170000" min="0" step="1000" inputmode="numeric">
+          </div>
+        </div>
+        <div class="rmc-field rmc-sm">
+          <label class="rmc-label" for="rmcDownPct">&nbsp;</label>
+          <div class="rmc-input-wrap">
+            <input class="rmc-input rmc-has-suffix" type="number" id="rmcDownPct" value="20" min="0" max="100" step="0.1" inputmode="decimal">
+            <span class="rmc-suffix">%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rmc-row">
+        <div class="rmc-field">
+          <label class="rmc-label" for="rmcTerm">Loan Term</label>
+          <select class="rmc-select" id="rmcTerm">
+            <option value="30" selected>30 years</option>
+            <option value="20">20 years</option>
+            <option value="15">15 years</option>
+            <option value="10">10 years</option>
+          </select>
+        </div>
+        <div class="rmc-field rmc-sm">
+          <label class="rmc-label" for="rmcRate">Interest Rate</label>
+          <div class="rmc-input-wrap">
+            <input class="rmc-input rmc-has-suffix" type="number" id="rmcRate" value="6.5" min="0.1" max="25" step="0.01" inputmode="decimal">
+            <span class="rmc-suffix">%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rmc-row">
+        <div class="rmc-field">
+          <label class="rmc-label" for="rmcTax">Property Tax / Year</label>
+          <div class="rmc-input-wrap">
+            <span class="rmc-prefix">$</span>
+            <input class="rmc-input rmc-has-prefix" type="number" id="rmcTax" value="7650" min="0" step="100" inputmode="numeric">
+          </div>
+        </div>
+        <div class="rmc-field rmc-sm">
+          <label class="rmc-label" for="rmcIns">Insurance / Year</label>
+          <div class="rmc-input-wrap">
+            <span class="rmc-prefix">$</span>
+            <input class="rmc-input rmc-has-prefix" type="number" id="rmcIns" value="3200" min="0" step="100" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <div class="rmc-field">
+        <label class="rmc-label" for="rmcHoa">HOA Fees / Month <span style="text-transform:none; letter-spacing:0; opacity:.7;">(optional)</span></label>
+        <div class="rmc-input-wrap">
+          <span class="rmc-prefix">$</span>
+          <input class="rmc-input rmc-has-prefix" type="number" id="rmcHoa" value="0" min="0" step="10" inputmode="numeric">
+        </div>
+        <p class="rmc-note">If your down payment is under 20%, private mortgage insurance is included in your estimate automatically.</p>
+      </div>
+
+      <button class="rmc-submit" type="button" id="rmcCalcBtn">Calculate My Payment</button>
+    </div>
+
+    <!-- ================= RESULTS ================= -->
+    <div class="rmc-results">
+      <div class="rmc-placeholder" id="rmcPlaceholder">
+        Enter your details and select<br>&ldquo;Calculate My Payment&rdquo; to see<br>your personalized estimate.
+      </div>
+
+      <div class="rmc-output" id="rmcOutput" aria-live="polite">
+        <div class="rmc-chart-wrap">
+          <svg class="rmc-donut" viewBox="0 0 120 120" role="img" aria-label="Monthly payment breakdown chart">
+            <g id="rmcSegments" transform="rotate(-90 60 60)"></g>
+            <text class="rmc-center-total" id="rmcTotal" x="60" y="60" text-anchor="middle" font-size="15"></text>
+            <text class="rmc-center-label" x="60" y="73" text-anchor="middle">Per Month</text>
+          </svg>
+        </div>
+        <ul class="rmc-legend" id="rmcLegend"></ul>
+
+        <div class="rmc-cta-wrap">
+          <p class="rmc-cta-line">Ready to see what&rsquo;s possible? We&rsquo;d be delighted to guide you home.</p>
+          <a class="rmc-cta" id="rmcCtaBtn" href="https://www.remaxprestigerealty.com/contact.php">Connect With Us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="rmc-disclaimer">
+    Estimates are provided for planning purposes only and do not constitute a loan offer, quote, or financial advice.
+    Actual rates, taxes, insurance premiums, and fees vary by lender, property, and borrower qualifications.
+    Please consult a licensed mortgage professional for personalized figures.
+    Each office independently owned and operated.
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var COLORS = {
+    pi:  '#A3D4F2',                    // Sky Blue — principal & interest
+    tax: '#F7F5EE',                    // Cream — property tax
+    ins: '#5B7FB8',                    // muted blue between brand blues — insurance
+    pmi: '#C9B78C',                    // soft champagne — PMI
+    hoa: '#3D5A99'                     // deep slate blue — HOA
+  };
+  var PMI_ANNUAL_RATE = 0.0058;        // 0.58% of loan amount per year (typical mid-range)
+
+  var $ = function (id) { return document.getElementById(id); };
+  var price = $('rmcPrice'), down = $('rmcDown'), downPct = $('rmcDownPct');
+
+  // --- Keep down payment $ and % in sync ---
+  function syncPctFromDollar() {
+    var p = parseFloat(price.value) || 0, d = parseFloat(down.value) || 0;
+    if (p > 0) downPct.value = (Math.round((d / p) * 1000) / 10).toString();
+  }
+  function syncDollarFromPct() {
+    var p = parseFloat(price.value) || 0, pct = parseFloat(downPct.value) || 0;
+    down.value = Math.round(p * pct / 100).toString();
+  }
+  down.addEventListener('input', syncPctFromDollar);
+  downPct.addEventListener('input', syncDollarFromPct);
+  price.addEventListener('input', syncDollarFromPct);
+
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  // --- Core mortgage math ---
+  function calculate() {
+    var homePrice = Math.max(parseFloat(price.value) || 0, 0);
+    var downPay   = Math.min(Math.max(parseFloat(down.value) || 0, 0), homePrice);
+    var years     = parseInt($('rmcTerm').value, 10);
+    var rate      = Math.max(parseFloat($('rmcRate').value) || 0, 0);
+    var taxYr     = Math.max(parseFloat($('rmcTax').value) || 0, 0);
+    var insYr     = Math.max(parseFloat($('rmcIns').value) || 0, 0);
+    var hoaMo     = Math.max(parseFloat($('rmcHoa').value) || 0, 0);
+
+    var loan = homePrice - downPay;
+    var n = years * 12;
+    var r = rate / 100 / 12;
+
+    // Monthly principal & interest (standard amortization formula)
+    var pi;
+    if (r === 0) { pi = loan / n; }
+    else { pi = loan * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1); }
+
+    var pmiMo = (homePrice > 0 && downPay / homePrice < 0.20) ? (loan * PMI_ANNUAL_RATE) / 12 : 0;
+
+    return [
+      { key: 'pi',  name: 'Principal & Interest', amt: pi,        color: COLORS.pi  },
+      { key: 'tax', name: 'Property Tax',         amt: taxYr / 12, color: COLORS.tax },
+      { key: 'ins', name: 'Home Insurance',       amt: insYr / 12, color: COLORS.ins },
+      { key: 'pmi', name: 'Mortgage Insurance (PMI)', amt: pmiMo, color: COLORS.pmi },
+      { key: 'hoa', name: 'HOA Fees',             amt: hoaMo,     color: COLORS.hoa }
+    ].filter(function (s) { return s.amt > 0.005; });
+  }
+
+  // --- Render donut (SVG stroke-dasharray technique) ---
+  function render(parts) {
+    var total = parts.reduce(function (t, p) { return t + p.amt; }, 0);
+    var g = $('rmcSegments');
+    var legend = $('rmcLegend');
+    g.innerHTML = '';
+    legend.innerHTML = '';
+
+    var R = 44, C = 2 * Math.PI * R, gap = parts.length > 1 ? 1.5 : 0;
+    var offset = 0;
+
+    parts.forEach(function (p) {
+      var frac = p.amt / total;
+      var len = Math.max(frac * C - gap, 0.5);
+      var seg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      seg.setAttribute('class', 'rmc-donut-seg');
+      seg.setAttribute('cx', '60'); seg.setAttribute('cy', '60'); seg.setAttribute('r', R);
+      seg.setAttribute('fill', 'none');
+      seg.setAttribute('stroke', p.color);
+      seg.setAttribute('stroke-width', '13');
+      seg.setAttribute('stroke-dasharray', len + ' ' + (C - len));
+      seg.setAttribute('stroke-dashoffset', String(-offset));
+      g.appendChild(seg);
+      offset += frac * C;
+
+      var li = document.createElement('li');
+      var sw = document.createElement('span');
+      sw.className = 'rmc-swatch'; sw.style.background = p.color;
+      var nm = document.createElement('span');
+      nm.className = 'rmc-legend-name'; nm.textContent = p.name;
+      var amt = document.createElement('span');
+      amt.className = 'rmc-legend-amt'; amt.textContent = fmt(p.amt);
+      li.appendChild(sw); li.appendChild(nm); li.appendChild(amt);
+      legend.appendChild(li);
+    });
+
+    var totalEl = $('rmcTotal');
+    var label = fmt(total);
+    totalEl.textContent = label;
+    totalEl.setAttribute('font-size', label.length > 7 ? '13' : '15');
+
+    $('rmcPlaceholder').style.display = 'none';
+    $('rmcOutput').classList.add('rmc-visible');
+  }
+
+  function runCalculation() {
+    var parts = calculate();
+    if (parts.length) render(parts);
+  }
+
+  $('rmcCalcBtn').addEventListener('click', runCalculation);
+
+  // Pressing Enter in any input calculates in place — and never bubbles
+  // up to a host-page form, so the page cannot reload.
+  $('rmcForm').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      runCalculation();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
