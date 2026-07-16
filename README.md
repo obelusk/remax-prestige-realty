@@ -5,6 +5,6 @@ Collection of pages and tools for REMAX Prestige Realty, created by Sean Lusk
 
 
 ## Mortgage Calculator
-mortgage-calculator.hmtml
+mortgage-calculator.html
 ***
 Allows the user to create mortgage estimates for a monthly budget
