@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History Timeline | REMAX Prestige Realty</title>
+<meta name="description" content="Interactive timeline of REMAX Prestige Realty, from Rose Faroni's first license in 1994 to Connor Faroni becoming Broker Owner in 2026.">
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --red:#DC1C2E; --blue:#003DA5; --ink:#1b2230; --muted:#5d6675; --line:#dfe3ea;
+    --bg:#ffffff; --bg2:#f5f6f9; --card:#ffffff; --shadow:0 6px 24px rgba(20,30,60,.08);
+    --font:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55;overflow-x:hidden}
+  img{max-width:100%;height:auto;display:block}
+  .wrap{width:min(1080px,100% - 2.5rem);margin-inline:auto}
+  h1,h2,h3{line-height:1.15;margin:0 0 .5em;font-weight:700}
+  h1{font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-.01em}
+  h2{font-size:clamp(1.4rem,3vw,2rem)}
+  h3{font-size:1.15rem}
+  p{margin:0 0 1em}
+  a{color:var(--blue)}
+
+  /* Timeline */
+  .timeline{padding:clamp(2rem,5vw,3.5rem) 0 4rem}
+  .tl-box{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:clamp(1.25rem,3vw,2.5rem)}
+  .tl-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;margin-bottom:1.5rem}
+  .tl-head p{color:var(--muted);margin:0;max-width:52ch}
+  .hint-m{display:none}@media(hover:none),(max-width:859px){.hint-d{display:none}.hint-m{display:inline}}
+
+  .ms-list{list-style:none;margin:1rem 0 0;padding:0;position:relative}
+  .ms{position:relative}
+  .pin{all:unset;cursor:pointer;display:flex;align-items:center;gap:.75rem;font-family:inherit}
+  .pin .lbl{font-weight:800;font-size:1.05rem;color:var(--ink);letter-spacing:-.01em}
+  .pin .dot{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--blue);box-sizing:border-box;transition:.25s;flex:0 0 auto}
+  .ms.has-photo .pin .dot{border-color:var(--red)}
+  .pin:focus-visible .dot{outline:3px solid var(--blue);outline-offset:3px}
+  .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:1.25rem;border:1px solid var(--line)}
+  .meta{display:flex;align-items:center;gap:.75rem;margin-bottom:.35rem;flex-wrap:wrap}
+  .year{font-size:1.6rem;font-weight:800;color:var(--red);letter-spacing:-.02em;line-height:1}
+  .tag{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:700}
+  .card p{color:#333c4a;margin:0}
+  .ph{margin:1rem 0 0}
+  .phbtn{all:unset;cursor:zoom-in;display:block;border-radius:10px;overflow:hidden;max-width:100%}
+  .phbtn img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center 22%}
+  .ph.logo .phbtn{max-width:180px}.ph.logo .phbtn img{aspect-ratio:1/1}
+  .phbtn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  figcaption{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+
+  /* Mobile / narrow: vertical list, tap a pin to expand */
+  @media(max-width:859px){
+    .ms-list::before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:2px;background:var(--line)}
+    .ms{padding:.35rem 0}
+    .pin{width:100%;padding:.4rem 0}
+    .pin .dot{margin-left:0}
+    .pin .lbl::after{content:"";display:inline-block;margin-left:.5rem;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg) translateY(-3px);transition:.2s}
+    .ms.open .pin .lbl::after{transform:rotate(-135deg) translateY(-2px)}
+    .ms.open .pin .dot{background:var(--red);border-color:var(--red)}
+    .card{display:none;margin:.25rem 0 .75rem 2.1rem}
+    .ms.open .card{display:block}
+  }
+
+  /* Desktop: horizontal track, cards pop out under the hovered pin */
+  @media(min-width:860px){
+    .ms-list{display:flex;justify-content:space-between;align-items:flex-start;padding:0 .25rem var(--reserve,380px)}
+    .ms-list::before{content:"";position:absolute;left:0;right:0;top:10px;height:3px;background:#c9d0dc;border-radius:2px}
+    .ms{flex:0 0 auto}
+    .pin{flex-direction:column;gap:.55rem;align-items:center;position:relative;z-index:1}
+    .pin .lbl{font-size:.95rem;color:var(--muted);transition:.2s}
+    .pin .dot{width:22px;height:22px}
+    .ms:hover .pin .lbl,.ms.open .pin .lbl{color:var(--ink)}
+    .ms:hover .pin .dot{transform:scale(1.15)}
+    .ms.open .pin .dot{background:var(--red);border-color:var(--red);box-shadow:0 0 0 7px rgba(220,28,46,.14);transform:scale(1.15)}
+    .ms.open::after{content:"";position:absolute;left:50%;top:60px;width:2px;height:22px;margin-left:-1px;background:var(--red)}
+    .card{position:absolute;top:82px;left:0;width:620px;z-index:3;padding:1.5rem;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .22s,transform .22s,visibility 0s .22s;pointer-events:none}
+    .ms.open .card{opacity:1;visibility:visible;transform:none;transition:opacity .22s,transform .22s;pointer-events:auto}
+    .card.with-photo{display:grid;grid-template-columns:1fr 220px;grid-template-rows:auto auto 1fr;column-gap:1.25rem;row-gap:0;align-items:start}
+    .card.with-photo .ph{margin:0;grid-column:2;grid-row:1/4}
+    .card.with-photo .meta,.card.with-photo h3,.card.with-photo p{grid-column:1}
+    .card.with-photo .phbtn img{aspect-ratio:4/5}
+    .card.logo-card .phbtn img{aspect-ratio:1/1}
+  }
+
+  /* Lightbox */
+  .lb{position:fixed;inset:0;background:rgba(10,14,24,.92);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
+  .lb.open{display:flex}
+  .lb img{max-width:min(96vw,1000px);max-height:82vh;width:auto;height:auto;border-radius:8px;object-fit:contain}
+  .lb figcaption{color:#cfd5e0;text-align:center;margin-top:.75rem;font-size:.9rem}
+  .lb button{position:absolute;top:1rem;right:1rem;background:#fff;color:var(--ink);border:0;border-radius:999px;width:42px;height:42px;font-size:1.4rem;cursor:pointer}
+
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{transition:none}}
+</style>
+<style>
+  footer{font-size:.8rem;color:var(--muted);padding:0 0 2rem;text-align:center}
+</style>
+</head>
+<body>
+
+<section class="timeline" id="history-timeline" aria-labelledby="tl-title">
+  <div class="wrap"><div class="tl-box">
+    <div class="tl-head">
+      <h2 id="tl-title">Our timeline, 1994 to today</h2>
+      <p><span class="hint-d">Hover over a year to open it.</span><span class="hint-m">Tap a year to open it.</span> Years with a red pin include a photo from our archive. Click any photo to enlarge.</p>
+    </div>
+    <ol class="ms-list">
+<li class="ms has-photo" id="y1994">
+  <button class="pin" type="button" aria-controls="c1994"><span class="dot" aria-hidden="true"></span><span class="lbl">1994</span></button>
+  <article class="card with-photo logo-card" id="c1994">
+    <div class="meta"><span class="year">1994</span><span class="tag">Where it starts</span></div>
+    <h3>Rose Faroni earns her Florida real estate license</h3>
+    <p>On July 25, 1994, Rose Faroni became a licensed Realtor in South Florida. She started the way most agents do: one client, one closing, one referral at a time. The habits she built in those first years are still the house rules today: pick up the phone, handle every detail, treat the home like your own.</p>
+    <figure class="ph logo"><button class="phbtn" type="button" aria-label="Enlarge photo: Rose Faroni branded logo"><img src="images/1994.jpg" width="180" height="180" alt="Rose Faroni branded logo" loading="lazy"></button><figcaption>Rose Faroni, the name the brokerage was built on.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2002">
+  <button class="pin" type="button" aria-controls="c2002"><span class="dot" aria-hidden="true"></span><span class="lbl">2002</span></button>
+  <article class="card with-photo" id="c2002">
+    <div class="meta"><span class="year">2002</span><span class="tag">First office</span></div>
+    <h3>REMAX Prestige Realty opens on Clematis Street, West Palm Beach</h3>
+    <p>Eight years in, Rose opened her first REMAX franchise in downtown West Palm Beach. The Clematis Street storefront, with its navy awning, listings taped in the window and her name on the door as Licensed Real Estate Broker, was the original REMAX Prestige Realty office and the anchor for everything that followed.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: The original REMAX Prestige Realty storefront on Clematis Street in downtown West Palm Beach"><img src="images/2002.jpg" width="900" height="675" alt="The original REMAX Prestige Realty storefront on Clematis Street in downtown West Palm Beach" loading="lazy"></button><figcaption>The original office on Clematis Street, West Palm Beach (photographed 2009).</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2007">
+  <button class="pin" type="button" aria-controls="c2007"><span class="dot" aria-hidden="true"></span><span class="lbl">2007</span></button>
+  <article class="card with-photo" id="c2007">
+    <div class="meta"><span class="year">2007</span><span class="tag">Second office</span></div>
+    <h3>Royal Palm Beach</h3>
+    <p>Five years after opening downtown, Rose added a second office in Royal Palm Beach, putting the brokerage in the western communities where so many Palm Beach County families were buying their first and second homes.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: The REMAX Prestige Realty office in Royal Palm Beach"><img src="images/2007.jpg" width="900" height="900" alt="The REMAX Prestige Realty office in Royal Palm Beach" loading="lazy" style="object-position:center 58%"></button><figcaption>The Royal Palm Beach office today.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2011">
+  <button class="pin" type="button" aria-controls="c2011"><span class="dot" aria-hidden="true"></span><span class="lbl">2011</span></button>
+  <article class="card with-photo" id="c2011">
+    <div class="meta"><span class="year">2011</span><span class="tag">Third office · Connor joins</span></div>
+    <h3>Wellington opens, and a front desk hire changes the story</h3>
+    <p>The third REMAX Prestige office opened in Wellington in 2011. That same March, Rose's son Connor Faroni started at the brokerage at the front desk, answering phones and greeting walk-ins. It was the first rung on a fourteen-year climb through every part of the business.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: The REMAX Prestige Realty office in Wellington"><img src="images/2011.jpg" width="900" height="900" alt="The REMAX Prestige Realty office in Wellington" loading="lazy" style="object-position:center 72%"></button><figcaption>The Wellington office today.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2013">
+  <button class="pin" type="button" aria-controls="c2013"><span class="dot" aria-hidden="true"></span><span class="lbl">2013</span></button>
+  <article class="card with-photo" id="c2013">
+    <div class="meta"><span class="year">2013</span><span class="tag">Off the clock</span></div>
+    <h3>Las Vegas, 80s night</h3>
+    <p>A brokerage is a family before it is a business. Rose in Las Vegas in 2013, fully committed to the costume theme. A reminder that the team has never taken itself too seriously, even while it was busy building one of the county's most awarded offices.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Rose Faroni in 1980s costume on a Las Vegas hotel balcony at night"><img src="images/2013.jpg" width="604" height="453" alt="Rose Faroni in 1980s costume on a Las Vegas hotel balcony at night" loading="lazy"></button><figcaption>Rose, Las Vegas, 2013.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2014">
+  <button class="pin" type="button" aria-controls="c2014"><span class="dot" aria-hidden="true"></span><span class="lbl">2014</span></button>
+  <article class="card with-photo" id="c2014">
+    <div class="meta"><span class="year">2014</span><span class="tag">Recognition</span></div>
+    <h3>Broker of the Year, and the first of many top-100 honors</h3>
+    <p>Rose was named 2014 Broker of the Year by the Realtors Association of the Palm Beaches. The same year, REMAX Prestige earned its first Catalyst Award, the honor REMAX gives to its top 100 offices across North America (since renamed the Premier Broker Award, and today the Presidents Award). The office has earned it eight times.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Rose Faroni receiving the 2014 Broker of the Year award"><img src="images/2014.jpg" width="480" height="720" alt="Rose Faroni receiving the 2014 Broker of the Year award" loading="lazy"></button><figcaption>Rose accepting the 2014 Broker of the Year award. Photo: PictureItSoldFL.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2015">
+  <button class="pin" type="button" aria-controls="c2015"><span class="dot" aria-hidden="true"></span><span class="lbl">2015</span></button>
+  <article class="card with-photo" id="c2015">
+    <div class="meta"><span class="year">2015</span><span class="tag">Fourth office</span></div>
+    <h3>Lake Worth: four offices across Palm Beach County</h3>
+    <p>With Lake Worth, REMAX Prestige Realty reached four locations: West Palm Beach, Royal Palm Beach, Wellington and Lake Worth. Four offices meant more agents, more signs and more buyers seeing every listing. That is the county-wide reach the brokerage is known for today.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Rose and Connor Faroni beside a large inflatable REMAX Prestige Realty balloon"><img src="images/2015.jpg" width="676" height="900" alt="Rose and Connor Faroni beside a large inflatable REMAX Prestige Realty balloon" loading="lazy"></button><figcaption>Rose and Connor at the 2015 office welcome event.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2016">
+  <button class="pin" type="button" aria-controls="c2016"><span class="dot" aria-hidden="true"></span><span class="lbl">2016</span></button>
+  <article class="card with-photo" id="c2016">
+    <div class="meta"><span class="year">2016</span><span class="tag">Recognition</span></div>
+    <h3>Presidents Award</h3>
+    <p>REMAX Prestige Realty was again named one of the top 100 REMAX offices on the North American continent, the second of what became four straight years of the award.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Connor and Rose Faroni addressing the team at the 2016 holiday party aboard a boat"><img src="images/2016.jpg" width="900" height="675" alt="Connor and Rose Faroni addressing the team at the 2016 holiday party aboard a boat" loading="lazy"></button><figcaption>Connor and Rose at the 2016 holiday party.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2017">
+  <button class="pin" type="button" aria-controls="c2017"><span class="dot" aria-hidden="true"></span><span class="lbl">2017</span></button>
+  <article class="card with-photo" id="c2017">
+    <div class="meta"><span class="year">2017</span><span class="tag">Recognition</span></div>
+    <h3>Presidents Award, third year running</h3>
+    <p>A third consecutive top-100 honor from REMAX. By now the mother-and-son pairing that runs the brokerage today was already how the team worked day to day: Rose as broker, Connor running operations.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Connor Faroni kissing Rose Faroni on the forehead at the 2017 holiday party"><img src="images/2017.jpg" width="675" height="900" alt="Connor Faroni kissing Rose Faroni on the forehead at the 2017 holiday party" loading="lazy"></button><figcaption>Connor and Rose, December 2017.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2018">
+  <button class="pin" type="button" aria-controls="c2018"><span class="dot" aria-hidden="true"></span><span class="lbl">2018</span></button>
+  <article class="card with-photo" id="c2018">
+    <div class="meta"><span class="year">2018</span><span class="tag">National recognition</span></div>
+    <h3>REMAX Broker Owner of the Year, USA Region</h3>
+    <p>The biggest single honor in the brokerage's history. Out of every REMAX office in the United States, Rose Faroni was named 2018 Broker Owner of the Year. REMAX Prestige also earned its fourth straight Presidents Award.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Connor and Rose Faroni portrait in a garden setting, 2018"><img src="images/2018.jpg" width="900" height="600" alt="Connor and Rose Faroni portrait in a garden setting, 2018" loading="lazy"></button><figcaption>Connor and Rose, spring 2018.</figcaption></figure>
+  </article>
+</li>
+<li class="ms" id="y2019">
+  <button class="pin" type="button" aria-controls="c2019"><span class="dot" aria-hidden="true"></span><span class="lbl">2019</span></button>
+  <article class="card" id="c2019">
+    <div class="meta"><span class="year">2019</span><span class="tag">Leadership</span></div>
+    <h3>Serving the profession</h3>
+    <p>From 2019 to 2020, Rose sat on the Regional Board of Directors for the Realtors of the Palm Beaches and Greater Fort Lauderdale and served as a Director of the Florida Association of Realtors, shaping the industry across the state and not just inside her own offices.</p>
+    
+  </article>
+</li>
+<li class="ms" id="y2020">
+  <button class="pin" type="button" aria-controls="c2020"><span class="dot" aria-hidden="true"></span><span class="lbl">2020</span></button>
+  <article class="card" id="c2020">
+    <div class="meta"><span class="year">2020</span><span class="tag">Recognition</span></div>
+    <h3>Presidents Award</h3>
+    <p>In a year that tested every business in the country, REMAX Prestige Realty was again named a top-100 REMAX office in North America, the first of four consecutive years.</p>
+    
+  </article>
+</li>
+<li class="ms" id="y2022">
+  <button class="pin" type="button" aria-controls="c2022"><span class="dot" aria-hidden="true"></span><span class="lbl">2022</span></button>
+  <article class="card" id="c2022">
+    <div class="meta"><span class="year">2022</span><span class="tag">Recognition</span></div>
+    <h3>Broker of the Year, again</h3>
+    <p>Rose was named 2022 Broker of the Year by Broward, Palm Beaches and St. Lucie Realtors, eight years after her first, and the office earned another Presidents Award.</p>
+    
+  </article>
+</li>
+<li class="ms" id="y2023">
+  <button class="pin" type="button" aria-controls="c2023"><span class="dot" aria-hidden="true"></span><span class="lbl">2023</span></button>
+  <article class="card" id="c2023">
+    <div class="meta"><span class="year">2023</span><span class="tag">Recognition</span></div>
+    <h3>Manager of the Year</h3>
+    <p>Connor Faroni was named 2023 Manager of the Year by REMAX, LLC, recognition for the Director of Operations role he had grown into over twelve years. REMAX Prestige also collected its eighth Presidents Award.</p>
+    
+  </article>
+</li>
+<li class="ms has-photo" id="y2025">
+  <button class="pin" type="button" aria-controls="c2025"><span class="dot" aria-hidden="true"></span><span class="lbl">2025</span></button>
+  <article class="card with-photo" id="c2025">
+    <div class="meta"><span class="year">2025</span><span class="tag">Next generation</span></div>
+    <h3>Connor becomes an owner</h3>
+    <p>In January 2025, Connor became an owner of REMAX Prestige Realty alongside Rose. The front desk hire from 2011 was now co-owner of the brokerage.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Rose and Connor Faroni seated together at a team holiday outing, December 2025"><img src="images/2025.jpg" width="675" height="900" alt="Rose and Connor Faroni seated together at a team holiday outing, December 2025" loading="lazy"></button><figcaption>Rose and Connor at the team holiday outing, December 2025.</figcaption></figure>
+  </article>
+</li>
+<li class="ms has-photo" id="y2026">
+  <button class="pin" type="button" aria-controls="c2026"><span class="dot" aria-hidden="true"></span><span class="lbl">2026</span></button>
+  <article class="card with-photo" id="c2026">
+    <div class="meta"><span class="year">2026</span><span class="tag">Today</span></div>
+    <h3>Connor Faroni, Broker Owner</h3>
+    <p>In January 2026, Connor Faroni became Broker Owner of REMAX Prestige Realty. Rose remains the founder and the standard the office is measured against. Four offices, more than three decades, one family, and every listing still treated like it's our own.</p>
+    <figure class="ph"><button class="phbtn" type="button" aria-label="Enlarge photo: Rose Faroni presenting Connor Faroni with an award at the 2026 REMAX Prestige Realty Agent Awards"><img src="images/2026.jpg" width="900" height="600" alt="Rose Faroni presenting Connor Faroni with an award at the 2026 REMAX Prestige Realty Agent Awards" loading="lazy" style="object-position:center 40%"></button><figcaption>Rose presenting Connor with a well-earned cape at the 2026 Agent Awards.</figcaption></figure>
+  </article>
+</li></ol>
+  </div></div>
+</section>
+
+<footer class="wrap">REMAX Prestige Realty · Each Office Independently Owned and Operated.</footer>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Enlarged photo">
+  <button type="button" id="lbclose" aria-label="Close">&times;</button>
+  <figure style="margin:0"><img id="lbimg" src="" alt=""><figcaption id="lbcap"></figcaption></figure>
+</div>
+
+<script>
+(function(){
+  var items=[].slice.call(document.querySelectorAll('.ms'));
+  var list=document.querySelector('.ms-list');
+  var mq=window.matchMedia('(min-width:860px)');
+  var current=null;
+
+  function place(ms){
+    if(!mq.matches) return;
+    var card=ms.querySelector('.card');
+    var listW=list.clientWidth, cardW=Math.min(620,listW);
+    card.style.width=cardW+'px';
+    var pinC=ms.offsetLeft+ms.offsetWidth/2;
+    var left=Math.max(0,Math.min(pinC-cardW/2,listW-cardW));
+    card.style.left=(left-ms.offsetLeft)+'px';
+  }
+  function open(ms){
+    if(current===ms) return;
+    if(current) current.classList.remove('open');
+    current=ms; ms.classList.add('open'); place(ms);
+    items.forEach(function(i){i.querySelector('.pin').setAttribute('aria-expanded',i===ms?'true':'false');});
+  }
+  function toggle(ms){
+    if(current===ms){ms.classList.remove('open');current=null;ms.querySelector('.pin').setAttribute('aria-expanded','false');}
+    else open(ms);
+  }
+  items.forEach(function(ms){
+    var pin=ms.querySelector('.pin'); pin.setAttribute('aria-expanded','false');
+    ms.addEventListener('mouseenter',function(){ if(mq.matches) open(ms); });
+    pin.addEventListener('click',function(){ toggle(ms); });
+    pin.addEventListener('focus',function(){ if(mq.matches) open(ms); });
+  });
+
+  // Reserve room under the track for the tallest card so the page never jumps
+  function reserve(){
+    if(!mq.matches){list.style.removeProperty('--reserve');items.forEach(function(i){i.querySelector('.card').style.cssText='';});if(current)place(current);return;}
+    var max=0;
+    items.forEach(function(ms){var c=ms.querySelector('.card');place(ms);max=Math.max(max,c.offsetHeight);});
+    list.style.setProperty('--reserve',(max+96)+'px');
+    if(current) place(current);
+  }
+  var rt; window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(reserve,120);});
+  window.addEventListener('load',function(){reserve(); if(mq.matches) open(items[0]);});
+  reserve();
+
+  // Lightbox
+  var lb=document.getElementById('lb'),li=document.getElementById('lbimg'),lc=document.getElementById('lbcap');
+  document.querySelectorAll('.phbtn').forEach(function(b){b.addEventListener('click',function(){
+    var im=b.querySelector('img'); li.src=im.src; li.alt=im.alt;
+    var cap=b.parentNode.querySelector('figcaption'); lc.textContent=cap?cap.textContent:'';
+    lb.classList.add('open'); document.body.style.overflow='hidden'; document.getElementById('lbclose').focus();
+  });});
+  function close(){lb.classList.remove('open');document.body.style.overflow='';}
+  document.getElementById('lbclose').addEventListener('click',close);
+  lb.addEventListener('click',function(e){if(e.target===lb)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
+</body>
+</html>
